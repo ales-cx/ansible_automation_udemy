@@ -112,3 +112,24 @@ vars:
       # Use the 'debug' module to display custom messages along with variable values
       debug:
         msg: "The value of my_var is: {{ my_var }}"
+
+
+#############################################################
+  # Define a list of users to create
+  vars:
+    user_list:
+      - alice
+      - bob
+      - charlie
+
+  # Define a list of tasks to be executed on the target hosts
+  tasks:
+    # Task: Create users using a loop
+    - name: Create Users
+      # Use the 'user' module to create users
+      user:
+        name: "{{ item }}"
+        state: present
+      # Use the 'loop' keyword to iterate over the 'user_list' variable
+      loop: "{{ user_list }}"
+###################################################
