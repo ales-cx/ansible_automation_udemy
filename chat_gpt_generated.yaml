@@ -23,6 +23,12 @@ vars:
   # Define a list of tasks to be executed on the target hosts
   tasks:
 
+# Task 0: Define a variable
+    - name: Define a custom fact
+      # Use the 'set_fact' module to define a variable named 'my_var'
+      set_fact:
+        my_var: "Hello, Ansible!"
+
 #############################################################
     # Task 1: Ensure that the Apache web server is installed
     - name: Install Apache
@@ -86,4 +92,18 @@ vars:
         state: reloaded
 
 ##################################################################
+   
+  # Task 7: Debug multiple variables
+    - name: Debug multiple variables
+      # Use the 'debug' module to display values of multiple variables
+      debug:
+        var: 
+          - my_var
+          - ansible_hostname  # Display the hostname of the target host
+          - ansible_distribution  # Display the Linux distribution of the target host
 
+    # Task 8: Debug with custom messages
+    - name: Debug with custom messages
+      # Use the 'debug' module to display custom messages along with variable values
+      debug:
+        msg: "The value of my_var is: {{ my_var }}"
