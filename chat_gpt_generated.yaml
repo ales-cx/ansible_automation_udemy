@@ -29,7 +29,7 @@ vars:
       set_fact:
         my_var: "Hello, Ansible!"
 
-#############################################################
+######################### REGISTER ####################################
     # Task 1: Ensure that the Apache web server is installed
     - name: Install Apache
       # 'apt' module is used for package management on Debian-based systems
@@ -76,7 +76,7 @@ vars:
         path: /var/www/html/mywebsite/index.html
         mode: '0644'
         
-##################################################################
+########################### HANDLER #######################################
 
     # Task 6: Configure the Apache virtual host
     - name: Configure Apache virtual host
@@ -96,7 +96,7 @@ vars:
         name: apache2
         state: reloaded
 
-##################################################################
+######################### DEBUG #########################################
    
   # Task 7: Debug multiple variables
     - name: Debug multiple variables
@@ -114,7 +114,7 @@ vars:
         msg: "The value of my_var is: {{ my_var }}"
 
 
-#############################################################
+######################## LOOPS #####################################
   # Define a list of users to create
   vars:
     user_list:
@@ -132,4 +132,24 @@ vars:
         state: present
       # Use the 'loop' keyword to iterate over the 'user_list' variable
       loop: "{{ user_list }}"
+
+###
+
+ # Define a list of directories to create
+  vars:
+    directory_list:
+      - /tmp/dir1
+      - /tmp/dir2
+      - /tmp/dir3
+
+  # Define a list of tasks to be executed on the target hosts
+  tasks:
+    # Task: Create directories using 'with_items'
+    - name: Create Directories
+      # Use the 'file' module to create directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      # Use 'with_items' to iterate over the 'directory_list' variable
+      with_items: "{{ directory_list }}"
 ###################################################
