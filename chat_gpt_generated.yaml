@@ -48,6 +48,11 @@ vars:
         enabled: yes
       # 'when' conditionally runs this task if Apache was installed in Task 1
       when: apache_installed.changed
+
+      # The Ansible failed_when and changed_when Statements 
+      # Ansible failed_when and changed_when statements are similar to ansible when statement.  
+      # The only difference is that It will mark the task as failed or Success[changed], when the condition defined, is met or satisfied.
+      # The primary purpose of the failed_when and changed_when statements are to determine whether the task is actually successful or failure
 #############################################################
 
     # Task 3: Create a website directory
