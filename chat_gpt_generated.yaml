@@ -133,7 +133,7 @@ vars:
       # Use the 'loop' keyword to iterate over the 'user_list' variable
       loop: "{{ user_list }}"
 
-###
+### WITH_ITEM LOOP
 
  # Define a list of directories to create
   vars:
@@ -152,4 +152,78 @@ vars:
         state: directory
       # Use 'with_items' to iterate over the 'directory_list' variable
       with_items: "{{ directory_list }}"
+
+### MULTIPLE WITH_ITEMS LOOP
+
+# Define the name of the playbook
+- name: Install Packages Example Playbook
+  # The 'hosts' section specifies the target hosts or groups of hosts
+  hosts: localhost
+  # No need for privilege escalation with 'become' in this example
+
+  # Define a list of packages and their states
+  vars:
+    packages:
+      - { name: nginx, state: present }
+      - { name: apache2, state: present }
+      - { name: postgresql, state: present }
+      - { name: openssh-server, state: absent }  # Remove openssh-server
+
+  # Define a list of tasks to be executed on the target hosts
+  tasks:
+    # Task: Install or remove packages using 'with_items'
+    - name: Install or Remove Packages
+      # Use the 'apt' module to install or remove packages based on the values in the 'packages' list
+      apt:
+        name: "{{ item.name }}"
+        state: "{{ item.state }}"
+      # Use 'with_items' to iterate over the 'packages' list, which contains dictionaries
+      with_items: "{{ packages }}"
+
+### WITH_TOGETHER loop
+
+  vars:
+    alpha: [ 'a', 'b', 'c', 'd' ]
+    numbers:  [ 1, 2, 3, 4 ]
+
+    - name: Loop Over Set of Collection variable
+      debug:
+        msg: "{{ item.0 }} and {{ item.1 }}"
+      with_together:
+        - "{{ alpha }}"
+        - "{{ numbers }}"
+
+### another examples of loops
+ vars:
+    alpha: [ 'a', 'b', 'c', 'd' ]
+    numbers:  [ 1, 2, 3, 4 ]
+
+  tasks:
+    # Add Multiple User's in one go (print olny one !!!)
+    - name : Random Looping Example
+      debug:
+        msg: "{{ item }}"
+      with_random_choice:
+        - "go through the door"
+        - "drink from the goblet"
+        - "press the red button"
+        - "do nothing"
+    
+    # Looping Over A List With An Index (print potition and value)
+    - name: Looping over a List
+      debug:
+        msg: "At array position {{ item.0 }} there is a value {{ item.1 }}"
+      with_indexed_items:
+        - "{{ alpha }}"
+
+    # Do Until Loop
+    - name: Ensure Apache is Running
+      service:
+        name: httpd
+        state: started
+      register: result
+      until: result.changed == True
+      retries: 10
+      delay: 4
+
 ###################################################
