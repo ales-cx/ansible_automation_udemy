@@ -11,8 +11,19 @@
   # 'become_user' specifies the user to become when executing tasks
   become_user: root
 
+  # Define variables that can be used throughout the playbook
+vars:
+  website_directory: /var/www/html/mywebsite
+  local_html_file: /path/to/local/index.html
+  list_example: [1,2,3,10]
+  i_int: 12
+  j_int: 13
+  s_str: "AHOJ"
+  
   # Define a list of tasks to be executed on the target hosts
   tasks:
+
+#############################################################
     # Task 1: Ensure that the Apache web server is installed
     - name: Install Apache
       # 'apt' module is used for package management on Debian-based systems
@@ -31,6 +42,7 @@
         enabled: yes
       # 'when' conditionally runs this task if Apache was installed in Task 1
       when: apache_installed.changed
+#############################################################
 
     # Task 3: Create a website directory
     - name: Create web directory
@@ -52,6 +64,8 @@
       file:
         path: /var/www/html/mywebsite/index.html
         mode: '0644'
+        
+##################################################################
 
     # Task 6: Configure the Apache virtual host
     - name: Configure Apache virtual host
@@ -70,3 +84,6 @@
       service:
         name: apache2
         state: reloaded
+
+##################################################################
+
