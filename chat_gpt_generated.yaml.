@@ -1,0 +1,72 @@
+---
+# This is a comment at the beginning of the playbook file
+# It helps provide context or information about the playbook
+
+# Define the name of the playbook
+- name: Example Playbook
+  # The 'hosts' section specifies the target hosts or groups of hosts
+  hosts: web_servers
+  # 'become' option is used to execute tasks with elevated privileges (sudo)
+  become: yes
+  # 'become_user' specifies the user to become when executing tasks
+  become_user: root
+
+  # Define a list of tasks to be executed on the target hosts
+  tasks:
+    # Task 1: Ensure that the Apache web server is installed
+    - name: Install Apache
+      # 'apt' module is used for package management on Debian-based systems
+      apt:
+        name: apache2
+        state: present
+      # 'register' saves the task result to a variable for later use
+      register: apache_installed
+
+    # Task 2: Ensure Apache service is running and enabled
+    - name: Start Apache and enable at boot
+      # 'service' module is used to manage services
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      # 'when' conditionally runs this task if Apache was installed in Task 1
+      when: apache_installed.changed
+
+    # Task 3: Create a website directory
+    - name: Create web directory
+      # 'file' module is used for file and directory operations
+      file:
+        path: /var/www/html/mywebsite
+        state: directory
+        mode: '0755'
+
+    # Task 4: Copy a local HTML file to the web directory
+    - name: Copy HTML file
+      # 'copy' module is used to copy files from the controller to the target hosts
+      copy:
+        src: /path/to/local/index.html
+        dest: /var/www/html/mywebsite/index.html
+
+    # Task 5: Ensure the index.html file has the correct permissions
+    - name: Set permissions on index.html
+      file:
+        path: /var/www/html/mywebsite/index.html
+        mode: '0644'
+
+    # Task 6: Configure the Apache virtual host
+    - name: Configure Apache virtual host
+      # 'template' module is used to create configuration files from templates
+      template:
+        src: templates/vhost.conf.j2
+        dest: /etc/apache2/sites-available/mywebsite.conf
+      # 'notify' triggers the 'Reload Apache' handler when this task changes
+      notify: Reload Apache
+
+  # Handlers are tasks that are only executed if notified by other tasks
+  handlers:
+    # Handler 1: Reload the Apache service
+    - name: Reload Apache
+      # 'service' module is used to reload the Apache service
+      service:
+        name: apache2
+        state: reloaded
